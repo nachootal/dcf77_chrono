@@ -101,13 +101,10 @@ mod tests {
                 Ok(coded_day_of_week) => {
                     match from_dcf77(coded_day_of_week) {
                         Ok(decoded_day_of_week) => {
-                            println!("Test Process Minutes : {:X?} - {:X?} - {:X?}", fake_input, coded_day_of_week, decoded_day_of_week.day_of_week);
                             assert!(0 == decoded_day_of_week.day);
                             assert!(fake_input == decoded_day_of_week.day_of_week);
-                            assert!(0 == decoded_day_of_week.day);
                             assert!(0 == decoded_day_of_week.month);
                             assert!(0 == decoded_day_of_week.year);
-                            assert!(0 == decoded_day_of_week.day_of_week);
                         }
                         Err(input) => {
                             //assert!(MAX_DAY > input)
@@ -129,13 +126,60 @@ mod tests {
                 Ok(coded_day) => {
                     match from_dcf77(coded_day) {
                         Ok(decoded_day) => {
-                            println!("Test Process Hour : {:X?} - {:X?} - {:X?}", fake_input, coded_day, decoded_day.day);
                             assert!(fake_input == decoded_day.day);
                             assert!(0 == decoded_day.day_of_week);
-                            assert!(0 == decoded_day.day);
                             assert!(0 == decoded_day.month);
                             assert!(0 == decoded_day.year);
+                        }
+                        Err(input) => {
+                            //assert!(MAX_DAY > input)
+                            println!("Hello");
+                        }
+                    }
+                }
+                Err(coded_day) => {
+                    //assert!(MAX_DAY < coded_day)
+                    println!("Hello");
+                }
+            }
+        }
+    }
+    #[test]
+    fn test_process_month() {
+        for fake_input in 0..=0xff {
+            match to_dcf77(0, 0, 0, fake_input, 0, 0) {
+                Ok(coded_day) => {
+                    match from_dcf77(coded_day) {
+                        Ok(decoded_day) => {
+                            assert!(0 == decoded_day.day);
                             assert!(0 == decoded_day.day_of_week);
+                            assert!(fake_input == decoded_day.month);
+                            assert!(0 == decoded_day.year);
+                        }
+                        Err(input) => {
+                            //assert!(MAX_DAY > input)
+                            println!("Hello");
+                        }
+                    }
+                }
+                Err(coded_day) => {
+                    //assert!(MAX_DAY < coded_day)
+                    println!("Hello");
+                }
+            }
+        }
+    }
+    #[test]
+    fn test_process_year() {
+        for fake_input in 0..=0xffff {
+            match to_dcf77(0, 0, 0, 0, 0, fake_input) {
+                Ok(coded_day) => {
+                    match from_dcf77(coded_day) {
+                        Ok(decoded_day) => {
+                            assert!(0 == decoded_day.day);
+                            assert!(0 == decoded_day.day_of_week);
+                            assert!(0 == decoded_day.month);
+                            assert!(fake_input == decoded_day.year);
                         }
                         Err(input) => {
                             //assert!(MAX_DAY > input)
