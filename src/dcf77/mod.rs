@@ -1,6 +1,6 @@
 use std::io::Error;
-pub mod Hour;
-pub mod Date;
+pub mod hour;
+pub mod date;
 
 /// Struct that contains the fields of information in a DCF77 bit field
 pub struct DateTimeNacho {
