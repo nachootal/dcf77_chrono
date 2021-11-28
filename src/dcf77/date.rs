@@ -101,6 +101,8 @@ mod tests {
                 Ok(coded_day_of_week) => {
                     match from_dcf77(coded_day_of_week) {
                         Ok(decoded_day_of_week) => {
+                            assert!(0 == decoded_day_of_week.hour);
+                            assert!(0 == decoded_day_of_week.minutes);
                             assert!(0 == decoded_day_of_week.day);
                             assert!(fake_input == decoded_day_of_week.day_of_week);
                             assert!(0 == decoded_day_of_week.month);
@@ -126,6 +128,8 @@ mod tests {
                 Ok(coded_day) => {
                     match from_dcf77(coded_day) {
                         Ok(decoded_day) => {
+                            assert!(0 == decoded_day.hour);
+                            assert!(0 == decoded_day.minutes);
                             assert!(fake_input == decoded_day.day);
                             assert!(0 == decoded_day.day_of_week);
                             assert!(0 == decoded_day.month);
@@ -151,6 +155,8 @@ mod tests {
                 Ok(coded_day) => {
                     match from_dcf77(coded_day) {
                         Ok(decoded_day) => {
+                            assert!(0 == decoded_day.hour);
+                            assert!(0 == decoded_day.minutes);
                             assert!(0 == decoded_day.day);
                             assert!(0 == decoded_day.day_of_week);
                             assert!(fake_input == decoded_day.month);
@@ -176,6 +182,8 @@ mod tests {
                 Ok(coded_day) => {
                     match from_dcf77(coded_day) {
                         Ok(decoded_day) => {
+                            assert!(0 == decoded_day.hour);
+                            assert!(0 == decoded_day.minutes);
                             assert!(0 == decoded_day.day);
                             assert!(0 == decoded_day.day_of_week);
                             assert!(0 == decoded_day.month);

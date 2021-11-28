@@ -75,3 +75,15 @@ pub fn decode_generic(input: u64, mask: u64, offset: u8) -> u16 {
     let output: u16 = (input & mask >> offset).try_into().unwrap();
     compute_pulse(output)
 }
+
+/// Generic function to decode an input value in a certain position in the bitfield that has a
+/// parity check
+pub fn decode_generic_parity(input: u64, mask: u64, offset: u8, parity_mask:u64) -> Result<u8, Error> {
+    if proof_parity(input&mask, input&parity_mask > 0) {
+        let output: u8 = (input >> offset).try_into().unwrap();
+        Ok(compute_pulse(output.try_into().unwrap()).try_into().unwrap())
+    } else {
+        // if parity not correct
+        Err(Error::from_raw_os_error(0))
+    }
+}

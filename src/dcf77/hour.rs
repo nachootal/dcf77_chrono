@@ -44,25 +44,12 @@ pub fn code_minutes(input: u8) -> Result<u64, Error> {
 
 /// Extracts the hour out of a dcf77 bitfield
 pub fn process_hour(input: u64) -> Result<u8, Error> {
-    if proof_parity(input&HOUR_MASK, input&PARITY_HOUR_BIT_MASK > 0) {
-        let output: u8 = (input & HOUR_MASK >> HOUR_POSITION).try_into().unwrap();
-        Ok(compute_pulse(output.try_into().unwrap()).try_into().unwrap())
-    } else {
-        Err(Error::from_raw_os_error(0))
-    }
+    decode_generic_parity(input, HOUR_MASK, HOUR_POSITION, PARITY_HOUR_BIT_MASK)
 }
 
 /// Extracts the minutes out of a dcf77 bitfield
 pub fn process_minutes(input: u64) -> Result<u8, Error> {
-    // Compute parity
-    // if correct
-    if proof_parity(input&MINUTES_MASK, input&PARITY_MINUTES_BIT_MASK > 0) {
-        let output: u8 = (input >> MINUTES_POSITION).try_into().unwrap();
-        Ok(compute_pulse(output.try_into().unwrap()).try_into().unwrap())
-    } else {
-        // if parity not correct
-        Err(Error::from_raw_os_error(0))
-    }
+    decode_generic_parity(input, MINUTES_MASK, MINUTES_POSITION, PARITY_MINUTES_BIT_MASK)
 }
 
 #[cfg(test)]
