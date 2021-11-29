@@ -9,7 +9,7 @@ pub fn from_dcf77(input: u64) -> Result<DateTimeNacho, Error> {
     let processed_day = dcf77::date::process_day(input);
     let processed_day_of_week = dcf77::date::process_day_of_week(input);
     let processed_month = dcf77::date::process_month(input);
-    let processed_year = dcf77::date::process_year(input);
+    let processed_year = dcf77::date::process_year(input)?;
     Ok(DateTimeNacho{hour: processed_hour, minutes: processed_minutes, day: processed_day, month: processed_month, year: processed_year, day_of_week: processed_day_of_week})
 }
 

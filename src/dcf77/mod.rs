@@ -1,13 +1,14 @@
 use std::io::Error;
 pub mod hour;
 pub mod date;
+pub mod metadata;
 
 /// Struct that contains the fields of information in a DCF77 bit field
 pub struct DateTimeNacho {
     /// Hour in format [0..24)
-    pub hour: u8,
+    pub hour: u16,
     /// Minutes in format [0..60)
-    pub minutes: u8,
+    pub minutes: u16,
     /// Day of the month in format [0..7)
     pub day: u8,
     /// Month in format [0..12]
@@ -78,9 +79,9 @@ pub fn decode_generic(input: u64, mask: u64, offset: u8) -> u16 {
 
 /// Generic function to decode an input value in a certain position in the bitfield that has a
 /// parity check
-pub fn decode_generic_parity(input: u64, mask: u64, offset: u8, parity_mask:u64) -> Result<u8, Error> {
+pub fn decode_generic_parity(input: u64, mask: u64, offset: u8, parity_mask:u64) -> Result<u16, Error> {
     if proof_parity(input&mask, input&parity_mask > 0) {
-        let output: u8 = (input >> offset).try_into().unwrap();
+        let output: u16 = (input >> offset).try_into().unwrap();
         Ok(compute_pulse(output.try_into().unwrap()).try_into().unwrap())
     } else {
         // if parity not correct

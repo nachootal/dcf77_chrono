@@ -50,6 +50,9 @@ const YEAR_MASK: u64 = DAY_OF_WEEK_BIT_MASK << DAY_OF_WEEK_POSITION;
 /// Maximum value for the year in a DCF77 bit field
 const MAX_YEAR: u16 = 3000;
 
+/// Position of the parity bit for the years in the DCF77 bit field
+const PARITY_YEAR_BIT_MASK: u64 = 1 << 1;
+
 /// Codes a given day [0..31] into DCF77 bit field
 pub fn code_day(input: u8) -> Result<u64, Error> {
     code_generic(input.into(), DAY_BIT_MASK, DAY_POSITION, 0, MAX_DAY.into())
@@ -86,8 +89,8 @@ pub fn process_month(input: u64) -> u8 {
 }
 
 /// Extracts the year out of a dcf77 bitfield
-pub fn process_year(input: u64) -> u16 {
-    decode_generic(input, YEAR_MASK, YEAR_POSITION)
+pub fn process_year(input: u64) -> Result<u16, Error> {
+    decode_generic_parity(input, YEAR_MASK, YEAR_POSITION, PARITY_YEAR_BIT_MASK)
 }
 
 #[cfg(test)]

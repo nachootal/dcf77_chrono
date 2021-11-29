@@ -43,12 +43,12 @@ pub fn code_minutes(input: u8) -> Result<u64, Error> {
 }
 
 /// Extracts the hour out of a dcf77 bitfield
-pub fn process_hour(input: u64) -> Result<u8, Error> {
+pub fn process_hour(input: u64) -> Result<u16, Error> {
     decode_generic_parity(input, HOUR_MASK, HOUR_POSITION, PARITY_HOUR_BIT_MASK)
 }
 
 /// Extracts the minutes out of a dcf77 bitfield
-pub fn process_minutes(input: u64) -> Result<u8, Error> {
+pub fn process_minutes(input: u64) -> Result<u16, Error> {
     decode_generic_parity(input, MINUTES_MASK, MINUTES_POSITION, PARITY_MINUTES_BIT_MASK)
 }
 
