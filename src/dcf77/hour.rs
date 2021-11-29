@@ -65,7 +65,7 @@ mod tests {
                         Ok(decoded_minutes) => {
                             println!("Test Process Minutes : {:X?} - {:X?} - {:X?}", fake_input, coded_minutes, decoded_minutes.minutes);
                             assert!(0 == decoded_minutes.hour);
-                            assert!(fake_input == decoded_minutes.minutes);
+                            assert!(u16::from(fake_input) == decoded_minutes.minutes);
                             assert!(0 == decoded_minutes.day);
                             assert!(0 == decoded_minutes.month);
                             assert!(0 == decoded_minutes.year);
@@ -92,7 +92,7 @@ mod tests {
                     match from_dcf77(coded_hour) {
                         Ok(decoded_hour) => {
                             println!("Test Process Hour : {:X?} - {:X?} - {:X?}", fake_input, coded_hour, decoded_hour.hour);
-                            assert!(fake_input == decoded_hour.hour);
+                            assert!(u16::from(fake_input) == decoded_hour.hour);
                             assert!(0 == decoded_hour.minutes);
                             assert!(0 == decoded_hour.day);
                             assert!(0 == decoded_hour.month);
