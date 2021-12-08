@@ -29,7 +29,7 @@ pub fn code_announce_daylight_saving_switching(input: bool) -> u64 {
 }
 
 /// Extracts the daylight saving switch bit out of a dcf77 bitfield
-pub fn process_daylight_saving_switch(input: u64) -> bool {
+pub fn process_announce_daylight_saving_switch(input: u64) -> bool {
     0 < input & ANNOUNCE_DAYLIGHT_SAVING_SWITCHING
 }
 
@@ -92,14 +92,11 @@ mod tests {
         let mut dcf77_bitfield = 0x0;
         dcf77_bitfield |= code_antenna(false);
         assert!(false == process_antenna(dcf77_bitfield));
-        assert!(false == process_daylight_saving_switch(dcf77_bitfield));
         assert!(false == process_daylight_saving(dcf77_bitfield));
         assert!(false == process_standard_time(dcf77_bitfield));
         assert!(false == process_bit_leap_second(dcf77_bitfield));
         dcf77_bitfield |= code_antenna(true);
         assert!(true == process_antenna(dcf77_bitfield));
-        assert!(false == process_daylight_saving_switch(dcf77_bitfield));
-        assert!(false == process_daylight_saving(dcf77_bitfield));
         assert!(false == process_daylight_saving(dcf77_bitfield));
         assert!(false == process_standard_time(dcf77_bitfield));
         assert!(false == process_bit_leap_second(dcf77_bitfield));
@@ -109,13 +106,13 @@ mod tests {
         let mut dcf77_bitfield = 0x0;
         dcf77_bitfield |= code_announce_daylight_saving_switching(false);
         assert!(false == process_antenna(dcf77_bitfield));
-        assert!(false == process_daylight_saving_switch(dcf77_bitfield));
+        assert!(false == process_announce_daylight_saving_switch(dcf77_bitfield));
         assert!(false == process_daylight_saving(dcf77_bitfield));
         assert!(false == process_standard_time(dcf77_bitfield));
         assert!(false == process_bit_leap_second(dcf77_bitfield));
         dcf77_bitfield |= code_announce_daylight_saving_switching(true);
         assert!(false == process_antenna(dcf77_bitfield));
-        assert!(true == process_daylight_saving_switch(dcf77_bitfield));
+        assert!(true == process_announce_daylight_saving_switch(dcf77_bitfield));
         assert!(false == process_daylight_saving(dcf77_bitfield));
         assert!(false == process_standard_time(dcf77_bitfield));
         assert!(false == process_bit_leap_second(dcf77_bitfield));
@@ -125,14 +122,14 @@ mod tests {
         let mut dcf77_bitfield = 0x0;
         dcf77_bitfield |= code_daylight_saving(false);
         assert!(false == process_antenna(dcf77_bitfield));
+        assert!(false == process_announce_daylight_saving_switch(dcf77_bitfield));
         assert!(false == process_daylight_saving(dcf77_bitfield));
-        assert!(false == process_daylight_saving_switch(dcf77_bitfield));
         assert!(false == process_standard_time(dcf77_bitfield));
         assert!(false == process_bit_leap_second(dcf77_bitfield));
         dcf77_bitfield |= code_daylight_saving(true);
-        assert!(true == process_daylight_saving(dcf77_bitfield));
         assert!(false == process_antenna(dcf77_bitfield));
-        assert!(false == process_daylight_saving_switch(dcf77_bitfield));
+        assert!(false == process_announce_daylight_saving_switch(dcf77_bitfield));
+        assert!(true == process_daylight_saving(dcf77_bitfield));
         assert!(false == process_standard_time(dcf77_bitfield));
         assert!(false == process_bit_leap_second(dcf77_bitfield));
     }
@@ -142,13 +139,11 @@ mod tests {
         dcf77_bitfield |= code_standard_time(false);
         assert!(false == process_antenna(dcf77_bitfield));
         assert!(false == process_standard_time(dcf77_bitfield));
-        assert!(false == process_daylight_saving_switch(dcf77_bitfield));
         assert!(false == process_daylight_saving(dcf77_bitfield));
         assert!(false == process_bit_leap_second(dcf77_bitfield));
         dcf77_bitfield |= code_standard_time(true);
         assert!(true == process_standard_time(dcf77_bitfield));
         assert!(false == process_antenna(dcf77_bitfield));
-        assert!(false == process_daylight_saving_switch(dcf77_bitfield));
         assert!(false == process_daylight_saving(dcf77_bitfield));
         assert!(false == process_bit_leap_second(dcf77_bitfield));
     }
@@ -158,14 +153,12 @@ mod tests {
         dcf77_bitfield |= code_bit_leap_second(false);
         assert!(false == process_antenna(dcf77_bitfield));
         assert!(false == process_bit_leap_second(dcf77_bitfield));
-        assert!(false == process_daylight_saving_switch(dcf77_bitfield));
         assert!(false == process_daylight_saving(dcf77_bitfield));
         assert!(false == process_standard_time(dcf77_bitfield));
         dcf77_bitfield |= code_bit_leap_second(true);
         assert!(true == process_bit_leap_second(dcf77_bitfield));
         assert!(false == process_antenna(dcf77_bitfield));
         assert!(false == process_standard_time(dcf77_bitfield));
-        assert!(false == process_daylight_saving_switch(dcf77_bitfield));
         assert!(false == process_daylight_saving(dcf77_bitfield));
     }
 }

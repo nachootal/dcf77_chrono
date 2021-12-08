@@ -74,18 +74,26 @@ pub fn process_minutes(input: u64) -> Result<u32, Error> {
 mod tests {
     use crate::to_dcf77;
     use crate::from_dcf77;
+    use crate::DCF77;
     use chrono::prelude::*;
     #[test]
     fn test_process_minutes() {
         let original_test_time = Utc::now() - chrono::Duration::minutes(Utc::now().time().minute().into());
         for fake_input in 0..=0xff {
-            let test_time = original_test_time + chrono::Duration::minutes(fake_input.into());
+            let test_time = DCF77 {
+                date: original_test_time + chrono::Duration::minutes(fake_input.into()),
+                antenna: false,
+                announce_daily_saving_time: false,
+                daily_saving_time: false,
+                standard_time: false,
+                bit_leap_second: false
+            };
             match to_dcf77(test_time) {
                 Ok(coded_minutes) => {
                     match from_dcf77(coded_minutes) {
                         Ok(decoded_minutes) => {
-                            println!("Minutes: Invented Hour: {:?} - Decoded Hour: {:?}", test_time.time(), decoded_minutes.time());
-                            assert!(test_time.time() == decoded_minutes.time())
+                            println!("Minutes: Invented Hour: {:?} - Decoded Hour: {:?}", test_time.date.time(), decoded_minutes.date.time());
+                            assert!(test_time.date.time() == decoded_minutes.date.time())
                         }
                         Err(input) => {
                             println!("Error on decoding {:} - 0x{:X} to dcf77 {:?}", fake_input, coded_minutes, input);
@@ -102,13 +110,20 @@ mod tests {
     fn test_process_hour() {
         let original_test_time = Utc::now() - chrono::Duration::hours(Utc::now().time().hour().into());
         for fake_input in 0..=0xff {
-            let test_time = original_test_time + chrono::Duration::hours(fake_input.into());
+            let test_time = DCF77 {
+                date: original_test_time + chrono::Duration::hours(fake_input.into()),
+                antenna: false,
+                announce_daily_saving_time: false,
+                daily_saving_time: false,
+                standard_time: false,
+                bit_leap_second: false
+            };
             match to_dcf77(test_time) {
                 Ok(coded_hour) => {
                     match from_dcf77(coded_hour) {
                         Ok(decoded_hour) => {
-                            println!("Hour: Invented Hour: {:?} - Decoded Hour: {:?}", test_time.time(), decoded_hour.time());
-                            assert!(test_time.time() == decoded_hour.time())
+                            println!("Hour: Invented Hour: {:?} - Decoded Hour: {:?}", test_time.date.time(), decoded_hour.date.time());
+                            assert!(test_time.date.time() == decoded_hour.date.time())
                         }
                         Err(input) => {
                             println!("Error on decoding {:} - 0x{:X} to dcf77 {:?}", fake_input, coded_hour, input);

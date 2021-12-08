@@ -132,6 +132,7 @@ pub fn process_year(input: u64) -> Result<u32, Error> {
 mod tests {
     use crate::to_dcf77;
     use crate::from_dcf77;
+    use crate::DCF77;
     use chrono::prelude::*;
     /*
     #[test]
@@ -160,13 +161,20 @@ mod tests {
     #[test]
     fn test_process_day() {
         for fake_input in 1..=30 {
-            let test_date = Utc.ymd(21, 11, fake_input).and_hms(10, 10, 0);
+            let test_date = DCF77 {
+                date: Utc.ymd(21, 11, fake_input).and_hms(10, 10, 0),
+                antenna: false,
+                announce_daily_saving_time: false,
+                daily_saving_time: false,
+                standard_time: false,
+                bit_leap_second: false
+            };
             match to_dcf77(test_date) {
                 Ok(coded_date) => {
                     match from_dcf77(coded_date) {
                         Ok(decoded_date) => {
-                            println!("Day: Invented Date: {:?} - Decoded Date: {:?} .. {:?}", test_date, decoded_date, test_date == decoded_date);
-                            assert!(test_date == decoded_date)
+                            println!("Day: Invented Date: {:?} - Decoded Date: {:?}", test_date.date, decoded_date.date);
+                            assert!(test_date.date == decoded_date.date)
                         }
                         Err(error) => {
                             println!("Error on decoding the dcf77 {:?}", error.into_inner());
@@ -182,13 +190,20 @@ mod tests {
     #[test]
     fn test_process_month() {
         for fake_input in 1..=12 {
-            let test_date = Utc.ymd(21, fake_input, 12).and_hms(21, 10, 0);
+            let test_date = DCF77 {
+                date: Utc.ymd(21, fake_input, 12).and_hms(21, 10, 0),
+                antenna: false,
+                announce_daily_saving_time: false,
+                daily_saving_time: false,
+                standard_time: false,
+                bit_leap_second: false
+            };
             match to_dcf77(test_date) {
                 Ok(coded_date) => {
                     match from_dcf77(coded_date) {
                         Ok(decoded_date) => {
-                            println!("Month: Invented Date: {:?} - Decoded Date: {:?}", test_date.date(), decoded_date.date());
-                            assert!(test_date == decoded_date)
+                            println!("Month: Invented Date: {:?} - Decoded Date: {:?}", test_date.date.date(), decoded_date.date.date());
+                            assert!(test_date.date == decoded_date.date)
                         }
                         Err(input) => {
                             println!("Error on decoding date: {:?}", input);
@@ -204,13 +219,20 @@ mod tests {
     #[test]
     fn test_process_year() {
         for fake_input in 0..=0xfff {
-            let test_date = Utc.ymd(i32::from(fake_input), 10, 10).and_hms(21, 10, 0);
+            let test_date = DCF77 {
+                date: Utc.ymd(i32::from(fake_input), 10, 10).and_hms(21, 10, 0),
+                antenna: false,
+                announce_daily_saving_time: false,
+                daily_saving_time: false,
+                standard_time: false,
+                bit_leap_second: false
+            };
             match to_dcf77(test_date) {
                 Ok(coded_date) => {
                     match from_dcf77(coded_date) {
                         Ok(decoded_date) => {
-                            println!("Year: Invented Date: {:?} - Decoded Date: {:?}", test_date.date(), decoded_date.date());
-                            assert!(test_date == decoded_date)
+                            println!("Year: Invented Date: {:?} - Decoded Date: {:?}", test_date.date.date(), decoded_date.date.date());
+                            assert!(test_date.date == decoded_date.date)
                         }
                         Err(error) => {
                             println!("Error on decoding date: {:?}", error.into_inner());
