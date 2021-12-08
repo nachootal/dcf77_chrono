@@ -3,7 +3,7 @@ use super::*;
 
 // As documented: https://www.cyber-sciences.com/wp-content/uploads/2019/01/TN-103_DCF77.pdf
 /// Mask for the hour [0..24) in the DCF77 bit field
-const HOUR_BIT_MASK: u64 = 0x7E;
+const HOUR_BIT_MASK: u64 = 0x3F;
 
 /// Position of the parity bit for the hour in the DCF77 bit field
 const PARITY_HOUR_BIT_MASK: u64 = 1 << 24;
@@ -15,10 +15,29 @@ const HOUR_POSITION: u8 = 25;
 const HOUR_MASK: u64 = HOUR_BIT_MASK << HOUR_POSITION;
 
 /// Maximum value for the hour in a DCF77 bit field
-const MAX_HOUR: u8 = 24;
+const MAX_HOUR: u32 = 24;
+
+/// Codes a given hour [0..24) into DCF77 bit field
+pub fn code_hour(input: u32) -> Result<u64, Error> {
+    let section = SectionInBitfield {data_bit_mask: HOUR_BIT_MASK,
+                                     data_position: HOUR_POSITION,
+                                     parity_mask: PARITY_HOUR_BIT_MASK,
+                                     max_data: MAX_HOUR};
+    code_dcf77(input, section)
+}
+
+/// Extracts the hour out of a dcf77 bitfield
+pub fn process_hour(input: u64) -> Result<u32, Error> {
+    println!("Process Hour: 0x{:X} - 0x{:X}- {:}- 0x{:X}", input, HOUR_MASK, HOUR_POSITION, PARITY_HOUR_BIT_MASK);
+    let section = SectionInBitfield {data_bit_mask: HOUR_BIT_MASK,
+                                     data_position: HOUR_POSITION,
+                                     parity_mask: PARITY_HOUR_BIT_MASK,
+                                     max_data: MAX_HOUR};
+    decode_dcf77(input, section)
+}
 
 /// Mask for the minutes [0..59) in the DCF77 bit field
-const MINUTES_BIT_MASK: u64 = 0xFE;
+const MINUTES_BIT_MASK: u64 = 0x7F;
 
 /// Position of the parity bit for the minutes in the DCF77 bit field
 const PARITY_MINUTES_BIT_MASK: u64 = 1 << 31;
@@ -30,56 +49,50 @@ const MINUTES_POSITION: u8 = 32;
 const MINUTES_MASK: u64 = MINUTES_BIT_MASK << MINUTES_POSITION;
 
 /// Maximum value for the minutes in a DCF77 bit field
-const MAX_MINUTES: u8 = 60;
-
-/// Codes a given hour [0..24) into DCF77 bit field
-pub fn code_hour(input: u8) -> Result<u64, Error> {
-    code_generic(input.into(), HOUR_BIT_MASK, HOUR_POSITION, PARITY_HOUR_BIT_MASK, MAX_HOUR.into())
-}
+const MAX_MINUTES: u32 = 60;
 
 /// Codes a given minutes [0..59) into DCF77 bit field
-pub fn code_minutes(input: u8) -> Result<u64, Error> {
-    code_generic(input.into(), MINUTES_BIT_MASK, MINUTES_POSITION, PARITY_MINUTES_BIT_MASK, MAX_MINUTES.into())
-}
-
-/// Extracts the hour out of a dcf77 bitfield
-pub fn process_hour(input: u64) -> Result<u16, Error> {
-    decode_generic_parity(input, HOUR_MASK, HOUR_POSITION, PARITY_HOUR_BIT_MASK)
+pub fn code_minutes(input: u32) -> Result<u64, Error> {
+    let section = SectionInBitfield {data_bit_mask: MINUTES_BIT_MASK,
+                                     data_position: MINUTES_POSITION,
+                                     parity_mask: PARITY_MINUTES_BIT_MASK,
+                                     max_data: MAX_MINUTES};
+    code_dcf77(input, section)
 }
 
 /// Extracts the minutes out of a dcf77 bitfield
-pub fn process_minutes(input: u64) -> Result<u16, Error> {
-    decode_generic_parity(input, MINUTES_MASK, MINUTES_POSITION, PARITY_MINUTES_BIT_MASK)
+pub fn process_minutes(input: u64) -> Result<u32, Error> {
+    println!("Process minutes: 0x{:X} - 0x{:X}- {:}- 0x{:X}", input, MINUTES_MASK, MINUTES_POSITION, PARITY_MINUTES_BIT_MASK);
+    let section = SectionInBitfield {data_bit_mask: MINUTES_BIT_MASK,
+                                     data_position: MINUTES_POSITION,
+                                     parity_mask: PARITY_MINUTES_BIT_MASK,
+                                     max_data: MAX_MINUTES};
+    decode_dcf77(input, section)
 }
 
 #[cfg(test)]
 mod tests {
     use crate::to_dcf77;
     use crate::from_dcf77;
+    use chrono::prelude::*;
+    /*
     #[test]
     fn test_process_minutes() {
         for fake_input in 0..=0xff {
-            match to_dcf77(0, fake_input, 0, 0, 0, 0) {
+            match to_dcf77(Utc.ymd(10, 11, 12).and_hms(10, fake_input, 0)) {
                 Ok(coded_minutes) => {
                     match from_dcf77(coded_minutes) {
                         Ok(decoded_minutes) => {
-                            println!("Test Process Minutes : {:X?} - {:X?} - {:X?}", fake_input, coded_minutes, decoded_minutes.minutes);
-                            assert!(0 == decoded_minutes.hour);
-                            assert!(u16::from(fake_input) == decoded_minutes.minutes);
-                            assert!(0 == decoded_minutes.day);
-                            assert!(0 == decoded_minutes.month);
-                            assert!(0 == decoded_minutes.year);
-                            assert!(0 == decoded_minutes.day_of_week);
+                            println!("Invented Date: {:?} - Decoded Date: {:?}", Utc.ymd(10, 11, 12).and_hms(13, fake_input, 0).time(), decoded_minutes.time());
+                            assert!(Utc.ymd(10, 11, 12).and_hms(10, fake_input, 0).time() == decoded_minutes.time())
                         }
                         Err(input) => {
-                            //assert!(MAX_HOUR > input)
-                            println!("Hello");
+                            println!("Error on decoding {:} - 0x{:X} to dcf77 {:?}", fake_input, coded_minutes, input);
                         }
                     }
                 }
                 Err(coded_hour) => {
-                    //assert!(MAX_HOUR < coded_hour)
-                    println!("Hello");
+                    println!("Error on creating the dcf77 {:?}", coded_hour);
                 }
             }
         }
@@ -87,29 +100,23 @@ mod tests {
     #[test]
     fn test_process_hour() {
         for fake_input in 0..=0xff {
-            match to_dcf77(fake_input, 0, 0, 0, 0, 0) {
+            match to_dcf77(Utc.ymd(10, 10, 10).and_hms(u32::from(fake_input), 10, 0)) {
                 Ok(coded_hour) => {
                     match from_dcf77(coded_hour) {
                         Ok(decoded_hour) => {
-                            println!("Test Process Hour : {:X?} - {:X?} - {:X?}", fake_input, coded_hour, decoded_hour.hour);
-                            assert!(u16::from(fake_input) == decoded_hour.hour);
-                            assert!(0 == decoded_hour.minutes);
-                            assert!(0 == decoded_hour.day);
-                            assert!(0 == decoded_hour.month);
-                            assert!(0 == decoded_hour.year);
-                            assert!(0 == decoded_hour.day_of_week);
+                            println!("Invented Date: {:?} - Decoded Date: {:?}", Utc.ymd(10, 10, 10).and_hms(fake_input, 10, 0).time(), decoded_hour.time());
+                            assert!(Utc.ymd(10, 10, 10).and_hms(fake_input, 10, 0).time() == decoded_hour.time())
                         }
                         Err(input) => {
-                            //assert!(MAX_HOUR > input)
-                            println!("Hello");
+                            println!("Error on decoding {:} - 0x{:X} to dcf77 {:?}", fake_input, coded_hour, input);
                         }
                     }
                 }
                 Err(coded_hour) => {
-                    //assert!(MAX_HOUR < coded_hour)
-                    println!("Hello");
+                    println!("Error on creating the dcf77 {:?}", coded_hour);
                 }
             }
         }
     }
+    */
 }
