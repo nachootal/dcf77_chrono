@@ -75,16 +75,17 @@ mod tests {
     use crate::to_dcf77;
     use crate::from_dcf77;
     use chrono::prelude::*;
-    /*
     #[test]
     fn test_process_minutes() {
+        let original_test_time = Utc::now() - chrono::Duration::minutes(Utc::now().time().minute().into());
         for fake_input in 0..=0xff {
-            match to_dcf77(Utc.ymd(10, 11, 12).and_hms(10, fake_input, 0)) {
+            let test_time = original_test_time + chrono::Duration::minutes(fake_input.into());
+            match to_dcf77(test_time) {
                 Ok(coded_minutes) => {
                     match from_dcf77(coded_minutes) {
                         Ok(decoded_minutes) => {
-                            println!("Invented Date: {:?} - Decoded Date: {:?}", Utc.ymd(10, 11, 12).and_hms(13, fake_input, 0).time(), decoded_minutes.time());
-                            assert!(Utc.ymd(10, 11, 12).and_hms(10, fake_input, 0).time() == decoded_minutes.time())
+                            println!("Minutes: Invented Hour: {:?} - Decoded Hour: {:?}", test_time.time(), decoded_minutes.time());
+                            assert!(test_time.time() == decoded_minutes.time())
                         }
                         Err(input) => {
                             println!("Error on decoding {:} - 0x{:X} to dcf77 {:?}", fake_input, coded_minutes, input);
@@ -99,13 +100,15 @@ mod tests {
     }
     #[test]
     fn test_process_hour() {
+        let original_test_time = Utc::now() - chrono::Duration::hours(Utc::now().time().hour().into());
         for fake_input in 0..=0xff {
-            match to_dcf77(Utc.ymd(10, 10, 10).and_hms(u32::from(fake_input), 10, 0)) {
+            let test_time = original_test_time + chrono::Duration::hours(fake_input.into());
+            match to_dcf77(test_time) {
                 Ok(coded_hour) => {
                     match from_dcf77(coded_hour) {
                         Ok(decoded_hour) => {
-                            println!("Invented Date: {:?} - Decoded Date: {:?}", Utc.ymd(10, 10, 10).and_hms(fake_input, 10, 0).time(), decoded_hour.time());
-                            assert!(Utc.ymd(10, 10, 10).and_hms(fake_input, 10, 0).time() == decoded_hour.time())
+                            println!("Hour: Invented Hour: {:?} - Decoded Hour: {:?}", test_time.time(), decoded_hour.time());
+                            assert!(test_time.time() == decoded_hour.time())
                         }
                         Err(input) => {
                             println!("Error on decoding {:} - 0x{:X} to dcf77 {:?}", fake_input, coded_hour, input);
@@ -118,5 +121,4 @@ mod tests {
             }
         }
     }
-    */
 }
