@@ -25,7 +25,6 @@ pub fn code_day(input: u32) -> Result<u64, Error> {
 
 /// Extracts the day out of a dcf77 bitfield
 pub fn process_day(input: u64) -> Result<u32, Error> {
-    println!("Process Day: 0x{:X} - 0x{:X} - 0x{:X}", input, DAY_MASK, DAY_POSITION);
    let section = SectionInBitfield {data_bit_mask: DAY_BIT_MASK,
                                       data_position: DAY_POSITION,
                                       parity_mask: 0,
@@ -86,7 +85,6 @@ pub fn code_month(input: u32) -> Result<u64, Error> {
 
 /// Extracts the month out of a dcf77 bitfield
 pub fn process_month(input: u64) -> Result<u32, Error> {
-    println!("Process Month: 0x{:X} - 0x{:X} - 0x{:X}", input, MONTH_MASK, MONTH_POSITION);
     let section = SectionInBitfield {data_bit_mask: MONTH_BIT_MASK,
                                      data_position: MONTH_POSITION,
                                      parity_mask: 0,
@@ -120,7 +118,6 @@ pub fn code_year(input: i32) -> Result<u64, Error> {
 
 /// Extracts the year out of a dcf77 bitfield
 pub fn process_year(input: u64) -> Result<u32, Error> {
-    println!("Process Year: 0x{:X} - 0x{:X} - 0x{:X} - 0x{:X}", input, YEAR_MASK, YEAR_POSITION, PARITY_YEAR_BIT_MASK);
     let section = SectionInBitfield {data_bit_mask: YEAR_BIT_MASK,
                                      data_position: YEAR_POSITION,
                                      parity_mask: PARITY_YEAR_BIT_MASK,
@@ -173,7 +170,6 @@ mod tests {
                 Ok(coded_date) => {
                     match from_dcf77(coded_date) {
                         Ok(decoded_date) => {
-                            println!("Day: Invented Date: {:?} - Decoded Date: {:?}", test_date.date, decoded_date.date);
                             assert!(test_date.date == decoded_date.date)
                         }
                         Err(error) => {
@@ -202,7 +198,6 @@ mod tests {
                 Ok(coded_date) => {
                     match from_dcf77(coded_date) {
                         Ok(decoded_date) => {
-                            println!("Month: Invented Date: {:?} - Decoded Date: {:?}", test_date.date.date(), decoded_date.date.date());
                             assert!(test_date.date == decoded_date.date)
                         }
                         Err(input) => {
@@ -231,7 +226,6 @@ mod tests {
                 Ok(coded_date) => {
                     match from_dcf77(coded_date) {
                         Ok(decoded_date) => {
-                            println!("Year: Invented Date: {:?} - Decoded Date: {:?}", test_date.date.date(), decoded_date.date.date());
                             assert!(test_date.date == decoded_date.date)
                         }
                         Err(error) => {

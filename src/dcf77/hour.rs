@@ -28,7 +28,6 @@ pub fn code_hour(input: u32) -> Result<u64, Error> {
 
 /// Extracts the hour out of a dcf77 bitfield
 pub fn process_hour(input: u64) -> Result<u32, Error> {
-    println!("Process Hour: 0x{:X} - 0x{:X}- {:}- 0x{:X}", input, HOUR_MASK, HOUR_POSITION, PARITY_HOUR_BIT_MASK);
     let section = SectionInBitfield {data_bit_mask: HOUR_BIT_MASK,
                                      data_position: HOUR_POSITION,
                                      parity_mask: PARITY_HOUR_BIT_MASK,
@@ -62,7 +61,6 @@ pub fn code_minutes(input: u32) -> Result<u64, Error> {
 
 /// Extracts the minutes out of a dcf77 bitfield
 pub fn process_minutes(input: u64) -> Result<u32, Error> {
-    println!("Process minutes: 0x{:X} - 0x{:X}- {:}- 0x{:X}", input, MINUTES_MASK, MINUTES_POSITION, PARITY_MINUTES_BIT_MASK);
     let section = SectionInBitfield {data_bit_mask: MINUTES_BIT_MASK,
                                      data_position: MINUTES_POSITION,
                                      parity_mask: PARITY_MINUTES_BIT_MASK,
@@ -92,7 +90,6 @@ mod tests {
                 Ok(coded_minutes) => {
                     match from_dcf77(coded_minutes) {
                         Ok(decoded_minutes) => {
-                            println!("Minutes: Invented Hour: {:?} - Decoded Hour: {:?}", test_time.date.time(), decoded_minutes.date.time());
                             assert!(test_time.date.time() == decoded_minutes.date.time())
                         }
                         Err(input) => {
@@ -122,7 +119,6 @@ mod tests {
                 Ok(coded_hour) => {
                     match from_dcf77(coded_hour) {
                         Ok(decoded_hour) => {
-                            println!("Hour: Invented Hour: {:?} - Decoded Hour: {:?}", test_time.date.time(), decoded_hour.date.time());
                             assert!(test_time.date.time() == decoded_hour.date.time())
                         }
                         Err(input) => {

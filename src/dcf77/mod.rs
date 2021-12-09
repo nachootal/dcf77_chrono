@@ -18,7 +18,6 @@ pub struct SectionInBitfield {
 
 /// Checks the parity (even) of an input to the given parity
 fn proof_parity(input: u64) -> bool {
-    //println!("Proof parity: 0x{:X} :: {:}", input, input.count_ones()%2 == 0);
     input.count_ones()%2 == 0
 }
 
@@ -31,7 +30,6 @@ fn compute_pulse(input: u64, mask: u64) -> u32 {
             output += value;
         }
     }
-    println!("Computed pulse: 0x{:X} - {:}", input, output);
     output
 }
 
@@ -41,13 +39,11 @@ fn create_pulse(input: u32, mask: u64) -> u32 {
     let mut output: u32 = 0;
     let used_bit_weights = &BIT_WEIGHTS[0..mask.count_ones().try_into().unwrap()];
     for (index, value) in used_bit_weights.iter().rev().enumerate() {
-        //println!("Input to pulse: {:}={:}=0x{:X}={:}={:}", input, aux, output, index, value);
         if aux >= *value {
             output |=  1 << index;
             aux -= value;
         }
     }
-    println!("Create pulse: {:}={:}=0x{:X}", input, aux, output);
     output
 }
 
@@ -56,13 +52,10 @@ pub fn code_dcf77(input: u32, section: SectionInBitfield) -> Result<u64, Error> 
     let mut coded_value:u64;
     if section.max_data >= input {
         coded_value = create_pulse(input, section.data_bit_mask).into();
-        println!("Locating pulse: 0x{:X} -  {:} - 0x{:}", coded_value, section.data_position, section.data_bit_mask.count_ones());
         coded_value = coded_value << u32::from(section.data_position);
-        println!("Pre Coded Value: {:} -> {:} -> 0x{:X}", input, section.data_position, coded_value);
         if 0 < section.parity_mask && !proof_parity(coded_value) {
             coded_value |= section.parity_mask;
         }
-        println!("Coded Value: {:} -> {:} -> 0x{:X}", input, section.data_position, coded_value);
         Ok(coded_value)
     } else {
         let error_payload = format!("Above max! : 0x{:X} -> 0x{:X}", input, section.max_data);
@@ -75,7 +68,6 @@ pub fn code_dcf77(input: u32, section: SectionInBitfield) -> Result<u64, Error> 
 pub fn decode_dcf77(input: u64, section: SectionInBitfield) -> Result<u32, Error> {
     let data: u64 = input & (section.data_bit_mask << section.data_position);
     let parity: u64 = input & section.parity_mask;
-    println!("Decode 0x{:X} - 0x{:X} - {:} - 0x{:X} - {:}", input, section.data_bit_mask, section.data_position, section.parity_mask, 0 < parity && !proof_parity(data | parity));
     if 0 < parity && !proof_parity(data | parity) {
         let error_payload = format!("Invalid data - Input: 0x{:X} Mask: 0x{:X} Offset: {:} Parity Mask: 0x{:X}", input, section.data_bit_mask, section.data_position, section.parity_mask);
         Err(Error::new(ErrorKind::InvalidData, error_payload))
