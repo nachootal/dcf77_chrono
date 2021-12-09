@@ -1,19 +1,65 @@
+#![warn(missing_docs)]
+//! The dcf_chrono library offers translation between chrono and DCF77 standard
+//!
+//! The library offers two main methods:
+//! - to_dcf77
+//! - from_dcf77
+
 use std::io::Error;
 use chrono::prelude::*;
 mod dcf77;
 
 /// Struct that represents the DCF77 information
+///
+/// This struct contains a chrono DateTime<Utc> field and the metadata
+/// that the DCF77 offers.
+///
+///
+///
+/// # Examples
+/// ```
+///let output = DCF77 {
+///    date: Utc.ymd(2021,
+///                11,
+///                12).and_hms(11,
+///                            22,
+///                            0),
+///    antenna: true,
+///    announce_daily_saving_time: false,
+///    daily_saving_time: false,
+///    standard_time: true,
+///    bit_leap_second: false};
+/// ```
 #[derive(Copy, Clone)]
 pub struct DCF77 {
+    /// Date in UTC timezone
     pub date: DateTime<Utc>,
+    /// Antenna bit (always 0)
     pub antenna: bool,
+    /// Announce Bit for Daylight Saving Time (DST) Switching
     pub announce_daily_saving_time: bool,
+    /// If this bit is set, Daylight Saving Time (DST) is Active
     pub daily_saving_time: bool,
+    /// If this bit is set, Standard Time is Active
     pub standard_time: bool,
+    /// Announce Bit for Leap Second
     pub bit_leap_second: bool
 }
 
-/// Decodes the hour and minutes out of a dcf77 bit field
+/// Decodes the date and metadata out of a dcf77 bit field
+///
+/// A DCF77 bitfield is given as input and a DCF77 struct is returned when successful
+///
+/// # Examples
+/// ```
+/// let a_bit_field: u64 = 0x00ff;
+/// match from_dcf77(a_bit_field) {
+///     Ok(coded_info) => {
+///
+///         println!("Date: {:?} - Time: {:?}", coded_info.date.date(), coded_info.date.time());
+///     }
+/// }
+/// ```
 pub fn from_dcf77(input: u64) -> Result<DCF77, Error> {
     let processed_hour = dcf77::hour::process_hour(input)?;
     let processed_minutes = dcf77::hour::process_minutes(input)?;
@@ -35,7 +81,26 @@ pub fn from_dcf77(input: u64) -> Result<DCF77, Error> {
     Ok(output)
 }
 
-/// Produces a bit field with the given hour and minutes
+/// Encodes a dcf77 bit field containing the information of a DCF77 struct
+///
+/// A DCF77 struct is given as input and a DCF77 bitfield is returned when successful
+///
+/// # Examples
+/// ```
+/// let a_date_and_info = DCF77 {
+///     date: Utc.ymd(21, 11, 10).and_hms(10, 10, 0),
+///     antenna: false,
+///     announce_daily_saving_time: false,
+///     daily_saving_time: false,
+///     standard_time: false,,
+///     bit_leap_second: false};
+/// match to_dcf77(a_bit_field) {
+///     Ok(coded_info) => {
+///
+///         println!("The given information is translated to: 0x{:X}", coded_info);
+///     }
+/// }
+/// ```
 pub fn to_dcf77(dcf_data: DCF77) -> Result<u64, Error> {
     let given_date = dcf_data.date.date().naive_local();
     let given_time = dcf_data.date.time();

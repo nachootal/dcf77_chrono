@@ -21,7 +21,7 @@ fn proof_parity(input: u64) -> bool {
     input.count_ones()%2 == 0
 }
 
-/// Computes the value of an input with the BIT WEIGHTS of a DCF77 bitfield
+/// Computes the value of an input bitfield with the BIT WEIGHTS of a DCF77 bitfield
 fn compute_pulse(input: u64, mask: u64) -> u32 {
     let mut output: u32 = 0;
     let used_bit_weights = &BIT_WEIGHTS[0..mask.count_ones().try_into().unwrap()];
