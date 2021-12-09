@@ -11,9 +11,6 @@ const PARITY_HOUR_BIT_MASK: u64 = 1 << 24;
 /// Position of the bits for the hour in the DCF77 bit field
 const HOUR_POSITION: u8 = 25;
 
-/// Mask for the hour aligned in the DCF77 bit field
-const HOUR_MASK: u64 = HOUR_BIT_MASK << HOUR_POSITION;
-
 /// Maximum value for the hour in a DCF77 bit field
 const MAX_HOUR: u32 = 24;
 
@@ -43,9 +40,6 @@ const PARITY_MINUTES_BIT_MASK: u64 = 1 << 31;
 
 /// Position of the bits for the minutes in the DCF77 bit field
 const MINUTES_POSITION: u8 = 32;
-
-/// Mask for the minutes aligned in the DCF77 bit field
-const MINUTES_MASK: u64 = MINUTES_BIT_MASK << MINUTES_POSITION;
 
 /// Maximum value for the minutes in a DCF77 bit field
 const MAX_MINUTES: u32 = 60;

@@ -8,9 +8,6 @@ const DAY_BIT_MASK: u64 = 0x3F;
 /// Position of the bits for the day in the DCF77 bit field
 const DAY_POSITION: u8 = 18;
 
-/// Mask for the day aligned in the DCF77 bit field
-const DAY_MASK: u64 = DAY_BIT_MASK << DAY_POSITION;
-
 /// Maximum value for the day in a DCF77 bit field
 const MAX_DAY: u32 = 31;
 
@@ -37,9 +34,6 @@ const DAY_OF_WEEK_BIT_MASK: u64 = 0x7;
 
 /// Position of the bits for the day_of_week in the DCF77 bit field
 const DAY_OF_WEEK_POSITION: u8 = 15;
-
-/// Mask for the day_of_week aligned in the DCF77 bit field
-const DAY_OF_WEEK_MASK: u64 = DAY_OF_WEEK_BIT_MASK << DAY_OF_WEEK_POSITION;
 
 /// Maximum value for the day_of_week in a DCF77 bit field
 const MAX_DAY_OF_WEEK: u32 = 7;
@@ -68,9 +62,6 @@ const MONTH_BIT_MASK: u64 = 0x1F;
 /// Position of the bits for the month in the DCF77 bit field
 const MONTH_POSITION: u8 = 10;
 
-/// Mask for the month aligned in the DCF77 bit field
-const MONTH_MASK: u64 = MONTH_BIT_MASK << MONTH_POSITION;
-
 /// Maximum value for the month in a DCF77 bit field
 const MAX_MONTH: u32 = 12;
 
@@ -97,9 +88,6 @@ const YEAR_BIT_MASK: u64 = 0xFF;
 
 /// Position of the bits for the year in the DCF77 bit field
 const YEAR_POSITION: u8 = 2;
-
-/// Mask for the year aligned in the DCF77 bit field
-const YEAR_MASK: u64 = YEAR_BIT_MASK << YEAR_POSITION;
 
 /// Maximum value for the year in a DCF77 bit field
 const MAX_YEAR: u32 = 165;
