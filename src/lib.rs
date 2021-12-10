@@ -18,6 +18,8 @@ mod dcf77;
 ///
 /// # Examples
 /// ```
+///use chrono::prelude::*;
+///use dcf77_chrono::DCF77;
 ///let output = DCF77 {
 ///    date: Utc.ymd(2021,
 ///                11,
@@ -29,6 +31,14 @@ mod dcf77;
 ///    daily_saving_time: false,
 ///    standard_time: true,
 ///    bit_leap_second: false};
+///    assert!(output.date.year() == 2021);
+///    assert!(output.date.month() == 11);
+///    assert!(output.date.day() == 12);
+///    assert!(output.antenna == true);
+///    assert!(output.announce_daily_saving_time == false);
+///    assert!(output.daily_saving_time == false);
+///    assert!(output.standard_time == true);
+///    assert!(output.bit_leap_second == false);
 /// ```
 #[derive(Copy, Clone)]
 pub struct DCF77 {
@@ -52,19 +62,37 @@ pub struct DCF77 {
 ///
 /// # Examples
 /// ```
-/// let a_bit_field: u64 = 0x00ff;
-/// match from_dcf77(a_bit_field) {
-///     Ok(coded_info) => {
-///
-///         println!("Date: {:?} - Time: {:?}", coded_info.date.date(), coded_info.date.time());
-///     }
-/// }
+///use chrono::prelude::*;
+///use dcf77_chrono::*;
+///let original_test_time = Utc::now() - chrono::Duration::minutes(Utc::now().time().minute().into());
+///let test_time = DCF77 {
+///    date: original_test_time,
+///    antenna: false,
+///    announce_daily_saving_time: false,
+///    daily_saving_time: false,
+///    standard_time: false,
+///    bit_leap_second: false
+///};
+///match to_dcf77(test_time) {
+///    Ok(coded_minutes) => {
+///        match from_dcf77(coded_minutes) {
+///            Ok(decoded_minutes) => {
+///                assert!(test_time.date.time() == decoded_minutes.date.time())
+///            }
+///            Err(input) => {
+///                println!("Error on decoding 0x{:X} to dcf77 {:?}", coded_minutes, input);
+///            }
+///        }
+///    }
+///    Err(coded_hour) => {
+///        println!("Error on creating the dcf77 {:?}", coded_hour);
+///    }
+///}
 /// ```
 pub fn from_dcf77(input: u64) -> Result<DCF77, Error> {
     let processed_hour = dcf77::hour::process_hour(input)?;
     let processed_minutes = dcf77::hour::process_minutes(input)?;
     let processed_day = dcf77::date::process_day(input)?;
-    //TODO: let processed_day_of_week = dcf77::date::process_day_of_week(input);
     let processed_month = dcf77::date::process_month(input)?;
     let processed_year = dcf77::date::process_year(input)? as i32;
     let output = DCF77 {
@@ -87,19 +115,32 @@ pub fn from_dcf77(input: u64) -> Result<DCF77, Error> {
 ///
 /// # Examples
 /// ```
-/// let a_date_and_info = DCF77 {
-///     date: Utc.ymd(21, 11, 10).and_hms(10, 10, 0),
-///     antenna: false,
-///     announce_daily_saving_time: false,
-///     daily_saving_time: false,
-///     standard_time: false,,
-///     bit_leap_second: false};
-/// match to_dcf77(a_bit_field) {
-///     Ok(coded_info) => {
-///
-///         println!("The given information is translated to: 0x{:X}", coded_info);
-///     }
-/// }
+///use chrono::prelude::*;
+///use dcf77_chrono::*;
+///let original_test_time = Utc::now() - chrono::Duration::minutes(Utc::now().time().minute().into());
+///let test_time = DCF77 {
+///    date: original_test_time,
+///    antenna: false,
+///    announce_daily_saving_time: false,
+///    daily_saving_time: false,
+///    standard_time: false,
+///    bit_leap_second: false
+///};
+///match to_dcf77(test_time) {
+///    Ok(coded_minutes) => {
+///        match from_dcf77(coded_minutes) {
+///            Ok(decoded_minutes) => {
+///                assert!(test_time.date.time() == decoded_minutes.date.time())
+///            }
+///            Err(input) => {
+///                println!("Error on decoding 0x{:X} to dcf77 {:?}", coded_minutes, input);
+///            }
+///        }
+///    }
+///    Err(coded_hour) => {
+///        println!("Error on creating the dcf77 {:?}", coded_hour);
+///    }
+///}
 /// ```
 pub fn to_dcf77(dcf_data: DCF77) -> Result<u64, Error> {
     let given_date = dcf_data.date.date().naive_local();
@@ -107,7 +148,7 @@ pub fn to_dcf77(dcf_data: DCF77) -> Result<u64, Error> {
     let coded_hour = dcf77::hour::code_hour(given_time.hour())?;
     let coded_minutes = dcf77::hour::code_minutes(given_time.minute())?;
     let coded_day = dcf77::date::code_day(given_date.day())?;
-    //TODO: let coded_day_of_week = dcf77::date::code_day_of_the_week(day_of_week)?;
+    let coded_day_of_week = dcf77::date::code_day_of_the_week(given_date.weekday().number_from_monday().try_into().unwrap())?;
     let coded_month = dcf77::date::code_month(given_date.month())?;
     let coded_year = dcf77::date::code_year(given_date.year())?;
     let coded_antenna = dcf77::metadata::code_antenna(dcf_data.antenna);
@@ -118,6 +159,7 @@ pub fn to_dcf77(dcf_data: DCF77) -> Result<u64, Error> {
     Ok(coded_hour |
         coded_minutes |
         coded_day |
+        coded_day_of_week |
         coded_month |
         coded_year |
         coded_antenna |

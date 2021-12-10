@@ -119,30 +119,34 @@ mod tests {
     use crate::from_dcf77;
     use crate::DCF77;
     use chrono::prelude::*;
-    /*
     #[test]
     fn test_process_day_of_week() {
-        for fake_input in 0..=0xff {
-            match to_dcf77(0, 0, 0, fake_input, 0, 0) {
+        for fake_input in 1..=7 {
+            let test_date = DCF77 {
+                date: Utc.ymd(21, 11, fake_input).and_hms(10, 10, 0),
+                antenna: false,
+                announce_daily_saving_time: false,
+                daily_saving_time: false,
+                standard_time: false,
+                bit_leap_second: false
+            };
+            match to_dcf77(test_date) {
                 Ok(coded_day_of_week) => {
                     match from_dcf77(coded_day_of_week) {
                         Ok(decoded_day_of_week) => {
-                            assert!(Local.ymd(0, 0, u32::from(fake_input)) == decoded_day_of_week.date())
+                            assert!(test_date.date == decoded_day_of_week.date)
                         }
-                        Err(input) => {
-                            //assert!(MAX_DAY > input)
-                            println!("Hello");
+                        Err(error) => {
+                            println!("Error on decoding the dcf77 {:?}", error.into_inner());
                         }
                     }
                 }
-                Err(coded_day) => {
-                    //assert!(MAX_DAY < coded_day)
-                    println!("Hello");
+                Err(error) => {
+                    println!("Error on creating the dcf77 {:?}", error.into_inner());
                 }
             }
         }
     }
-    */
     #[test]
     fn test_process_day() {
         for fake_input in 1..=30 {
