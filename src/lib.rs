@@ -96,11 +96,12 @@ pub fn from_dcf77(input: u64) -> Result<DCF77, Error> {
     let processed_month = dcf77::date::process_month(input)?;
     let processed_year = dcf77::date::process_year(input)? as i32;
     let output = DCF77 {
-        date: Utc.ymd(processed_year,
-                    processed_month,
-                    processed_day).and_hms(processed_hour,
-                                            processed_minutes,
-                                            0),
+        date: Utc.with_ymd_and_hms(processed_year,
+                                    processed_month,
+                                    processed_day,
+                                    processed_hour,
+                                    processed_minutes,
+                                    0).single().unwrap(),
         antenna: dcf77::metadata::process_antenna(input),
         announce_daily_saving_time: dcf77::metadata::process_announce_daylight_saving_switch(input),
         daily_saving_time: dcf77::metadata::process_daylight_saving(input),
@@ -143,7 +144,7 @@ pub fn from_dcf77(input: u64) -> Result<DCF77, Error> {
 ///}
 /// ```
 pub fn to_dcf77(dcf_data: DCF77) -> Result<u64, Error> {
-    let given_date = dcf_data.date.date().naive_local();
+    let given_date = dcf_data.date.date_naive();
     let given_time = dcf_data.date.time();
     let coded_hour = dcf77::hour::code_hour(given_time.hour())?;
     let coded_minutes = dcf77::hour::code_minutes(given_time.minute())?;
