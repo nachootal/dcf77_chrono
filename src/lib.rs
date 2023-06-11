@@ -11,7 +11,7 @@ mod dcf77;
 
 /// Struct that represents the DCF77 information
 ///
-/// This struct contains a chrono DateTime<Utc> field and the metadata
+/// This struct contains a chrono `DateTime<Utc>` field and the metadata
 /// that the DCF77 offers.
 ///
 ///
